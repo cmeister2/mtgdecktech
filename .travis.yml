@@ -1,0 +1,18 @@
+language: python
+python:
+- 3.6
+- 3.5
+- 3.4
+- 2.7
+install: pip install -U tox-travis
+script: tox
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: cmeister2
+  password:
+    secure: Bg0rMw5rIaxP5mbEEgdg2P37JfhA0K8mWl8bV2ahCZ8JK6d7uAOUpqGYT0o6rUO6pq+WhkdGGwBvz/L4zJq9AUFXyBD4bxpUqvIEdF+vXbqQtjnbgy6wUOBmCFBunGdyqpNNuNS7YRPn7sLCW+6hKYM6dcdj+vYl5BvGFBCJyWH5UI8QfiZIkswVzywKT0MpmeSfOwZmVYFXj8ce/ohS0ocd/gpjiC4Tm9GaIdjSwU346W8BCIKSvDBommlAen7Lq4/wCw21L9QZL9IncvXsUYdFEM/8Da05l0uwliUdjc8H0BhX1lKONDnot9NWj9w4IRhGdBKbq9NfdkPjEikoIXgCs8siQr9KpQ5NteW0WINkEM8VXezPa66jd3YGzVIGSAzJ971w2YjeHX+xuJQ7mMx0SeTMrRu00XTRdyIR3/k2tImz+bvSSIq1sxFJQfgsyI8Tao9bnM+HaRVKAz4C9CjRk0jhF6hCPwhnRdTs1wFfvj3zfNr+gHDK9QkxCZgVMH6gTftwkD63TmNljUAAuFbaxdOrr905Ij3pk1BJt91qMzIuHkdaJRHySqHvW3CitbBMsrza05mFJ2CybHbcH08C9KRuxo8xIXjlTNeCFlvg3/57e9nFTM2wF4a7I351URWICoC6n8ccyvj4+S/rT/lOVbSHR0t8gUW0QvFqzKQ=
+  on:
+    tags: true
+    repo: cmeister2/mtgdecktech
+    python: 3.6
