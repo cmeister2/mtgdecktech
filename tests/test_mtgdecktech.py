@@ -3,11 +3,9 @@
 
 """Tests for `mtgdecktech` package."""
 
+import re
 import pytest
-
 from click.testing import CliRunner
-
-from mtgdecktech import mtgdecktech
 from mtgdecktech import cli
 
 
@@ -30,9 +28,7 @@ def test_content(response):
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
-    result = runner.invoke(cli.main)
-    assert result.exit_code == 0
-    assert 'mtgdecktech.cli.main' in result.output
-    help_result = runner.invoke(cli.main, ['--help'])
+    help_result = runner.invoke(cli.server, ['--help'])
     assert help_result.exit_code == 0
-    assert '--help  Show this message and exit.' in help_result.output
+    assert re.search(r'--help\s+Show this message and exit\.',
+                     help_result.output)

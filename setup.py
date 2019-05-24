@@ -11,7 +11,8 @@ with open('README.md') as readme_file:
 with open('CHANGELOG.md') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', ]
+requirements = ['Click>=6.0',
+                "Flask>=1.0.0"]
 
 setup_requirements = ['pytest-runner', ]
 
@@ -33,10 +34,11 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    description="Program for generating images for Magic: the Gathering deck tech videos",
+    description="Program for generating images for Magic: the Gathering deck "
+                "tech videos",
     entry_points={
         'console_scripts': [
-            'mtgdecktech=mtgdecktech.cli:main',
+            'mtgdecktech=mtgdecktech.cli:server',
         ],
     },
     install_requires=requirements,
