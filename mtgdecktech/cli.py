@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """Console script for mtgdecktech."""
+import logging
+import os
 import sys
 import threading
 import webbrowser
@@ -19,16 +21,31 @@ def server(host, port, debug):
     Args:
         host: Which system IP to bind the web server to.
         port: Which port to expose the web server on.
-        debug: Whether to enable Flask debugging.
+        debug: Whether to enable debugging.
 
     Returns:
         Exit code for CLI.
 
     """
-    # Start the browser asynchronously
-    click.echo("Start browser in thread")
-    url = "http://{host}:{port}".format(host=host, port=port)
-    threading.Timer(1.25, lambda: webbrowser.open(url)).start()
+    if debug:
+        # Check whether to start the browser. On initial start,
+        # WERKZEUG_RUN_MAIN is None. On debug reload, this is now set.
+        start_browser = os.environ.get("WERKZEUG_RUN_MAIN") is None
+        logging_level = logging.DEBUG
+    else:
+        start_browser = True
+        logging_level = logging.INFO
+
+    # Configure logging
+    logging.basicConfig(format="%(asctime)s %(levelname)-5.5s %(message)s",
+                        stream=sys.stdout,
+                        level=logging_level)
+
+    if start_browser:
+        # Start the browser asynchronously
+        logging.info("Starting browser in thread...")
+        url = "http://{host}:{port}".format(host=host, port=port)
+        threading.Timer(1.25, lambda: webbrowser.open(url)).start()
 
     # Now start the application server.
     click.echo("Starting server")

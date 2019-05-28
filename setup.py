@@ -12,7 +12,9 @@ with open('CHANGELOG.md') as history_file:
     history = history_file.read()
 
 requirements = ['Click>=6.0',
-                "Flask>=1.0.0"]
+                "Flask>=1.0.0",
+                "Werkzeug>=0.15.4",
+                "scryfall_cache>=0.2.1"]
 
 setup_requirements = ['pytest-runner', ]
 
