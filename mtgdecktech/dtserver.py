@@ -2,8 +2,11 @@
 
 """Main module."""
 
+import tempfile
 from flask import Flask, request, render_template, abort, current_app, send_file, g
-from .scryfall import get_scryfall_cache
+from .scryfall import scryfall_client, close_scryfall_cache, ImageGenerator
+from .compositing import Scene, CardLayer, DummyTextLayer, SubtitleLayer
+
 
 app = Flask(__name__)
 
@@ -16,13 +19,31 @@ def main_page():
         Page to render.
 
     """
-    g.test = "Max"
+    mtgo_id = 12345
+    current_app.logger.info("Render card with MTGO ID %d", mtgo_id)
 
-    sc = get_scryfall_cache()
-    return render_template("main_page.html", sc=sc)
+    card = ImageGenerator.from_mtgo_id(mtgo_id)
+    if not card:
+        # Failed to find the card
+        abort(404)
+
+    scene1 = Scene(1920, 1080)
+    layer1 = CardLayer(card)
+    scene1.add_layer(layer1)
+
+    # Add a SubtitleLayer which is related positionally to the card layer
+    text1 = SubtitleLayer(layer1, "Hello", 50)
+    scene1.add_layer(text1)
+
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as f:
+        current_app.logger.info("Temporary file is at %s", f.name)
+        scene1.save_to_file_object(f)
+
+        # Return the image data.
+        return send_file(f.name, mimetype="image/png")
 
 
-@app.route('/mtgo/<int:mtgo_id>.jpg')
+@app.route('/mtgo/<int:mtgo_id>.png')
 def render_image(mtgo_id: int):
     """Render image for given MTGO ID.
 
@@ -32,12 +53,7 @@ def render_image(mtgo_id: int):
     """
     current_app.logger.info("Render card with MTGO ID %d", mtgo_id)
 
-    current_app.logger.info("g: %s", g)
-    current_app.logger.info("g.test: %s", g.test)
-    current_app.logger.info("g.scryfall: %s", g.scryfall)
-
-    sc = get_scryfall_cache()
-    card = sc.get_card(mtgo_id=mtgo_id)
+    card = scryfall_client.get_card(mtgo_id=mtgo_id)
     if not card:
         # Failed to find the card
         abort(404)
@@ -50,6 +66,36 @@ def render_image(mtgo_id: int):
 
     # Return the image data.
     return send_file(image_path, mimetype="image/png")
+
+
+@app.route('/scene')
+def render_scene():
+    """Render a scene according to input.
+
+    Returns:
+        Binary image data.
+
+    """
+    scene_args = request.args.get('args')
+    current_app.logger.info("Args: %s", scene_args)
+
+    # current_app.logger.info("Render card with MTGO ID %d", mtgo_id)
+    #
+    # card = scryfall_client.get_card(mtgo_id=mtgo_id)
+    # if not card:
+    #     # Failed to find the card
+    #     abort(404)
+    #
+    # current_app.logger.debug("Card: %s", card)
+    #
+    # # Get the local image path for the image. This might download the image.
+    # image_path = card.get_image_path("png")
+    # current_app.logger.debug("Image path: %s", image_path)
+    #
+    # # Return the image data.
+    # return send_file(image_path, mimetype="image/png")
+
+    abort(403)
 
 
 @app.route('/shutdown', methods=['POST'])
@@ -70,3 +116,8 @@ def shutdown():
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
     return 'Server shutting down...'
+
+
+@app.teardown_appcontext
+def teardown_client(_ctx):
+    close_scryfall_cache()

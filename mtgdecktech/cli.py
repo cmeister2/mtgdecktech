@@ -15,7 +15,7 @@ import click
 @click.option("--host", default="127.0.0.1", help="What IP to bind to")
 @click.option("--port", default="5000", help="What port to bind to")
 @click.option("--debug", default=False, help="Enable Flask debugging")
-def server(host, port, debug):
+def server(host: str, port: str, debug: bool):
     """Start server and pop up a webbrowser.
 
     Args:

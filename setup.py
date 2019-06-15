@@ -14,7 +14,8 @@ with open('CHANGELOG.md') as history_file:
 requirements = ['Click>=6.0',
                 "Flask>=1.0.0",
                 "Werkzeug>=0.15.4",
-                "scryfall_cache>=0.2.1"]
+                "scryfall_cache>=0.2.2",
+                "Pillow>=5.4.1"]
 
 setup_requirements = ['pytest-runner', ]
 
@@ -28,8 +29,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
@@ -51,6 +50,7 @@ setup(
     keywords='mtgdecktech',
     name='mtgdecktech',
     packages=find_packages(include=['mtgdecktech']),
+    python_requires='>=3.4',
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
